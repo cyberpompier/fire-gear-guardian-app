@@ -1,13 +1,13 @@
 
 import { useState } from "react";
 import { 
-  activity, 
-  shield, 
-  users, 
-  settings, 
-  archive, 
-  bell,
-  monitor
+  Activity, 
+  Shield, 
+  Users, 
+  Settings, 
+  Archive, 
+  Bell,
+  Monitor
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -28,51 +28,52 @@ const menuItems = [
   { 
     title: "Tableau de bord", 
     url: "/", 
-    icon: monitor,
+    icon: Monitor,
     description: "Vue d'ensemble"
   },
   { 
     title: "Gestion EPI", 
     url: "/epi", 
-    icon: shield,
+    icon: Shield,
     description: "Équipements de protection"
   },
   { 
     title: "Personnel", 
     url: "/personnel", 
-    icon: users,
+    icon: Users,
     description: "Sapeurs-pompiers"
   },
   { 
     title: "Vérifications", 
     url: "/verifications", 
-    icon: activity,
+    icon: Activity,
     description: "Contrôles périodiques"
   },
   { 
     title: "Alertes", 
     url: "/alertes", 
-    icon: bell,
+    icon: Bell,
     description: "Notifications"
   },
   { 
     title: "Archives", 
     url: "/archives", 
-    icon: archive,
+    icon: Archive,
     description: "Historique"
   },
   { 
     title: "Paramètres", 
     url: "/settings", 
-    icon: settings,
+    icon: Settings,
     description: "Configuration"
   },
 ];
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const collapsed = state === "collapsed";
 
   const isActive = (path: string) => {
     if (path === "/" && currentPath === "/") return true;
@@ -90,14 +91,14 @@ export function AppSidebar() {
   return (
     <Sidebar
       className={`${collapsed ? "w-14" : "w-64"} transition-all duration-300 border-r border-border/50 bg-sidebar`}
-      collapsible
+      collapsible="icon"
     >
       <SidebarContent className="bg-gradient-to-b from-sidebar to-sidebar/80">
         {/* Header */}
         <div className="p-4 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <shield className="w-5 h-5 text-primary-foreground" />
+              <Shield className="w-5 h-5 text-primary-foreground" />
             </div>
             {!collapsed && (
               <div className="flex flex-col">

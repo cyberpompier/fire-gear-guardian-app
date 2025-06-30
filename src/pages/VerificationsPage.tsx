@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  activity, 
-  calendar,
-  checkCircle,
-  alertTriangle,
-  clock,
-  user,
-  shield
+  Activity, 
+  Calendar,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+  User,
+  Shield
 } from "lucide-react";
 
 export function VerificationsPage() {
@@ -76,7 +76,7 @@ export function VerificationsPage() {
           </p>
         </div>
         <Button className="rescue-gradient text-white border-0 hover:opacity-90">
-          <activity className="w-4 h-4 mr-2" />
+          <Activity className="w-4 h-4 mr-2" />
           Nouvelle vérification
         </Button>
       </div>
@@ -86,7 +86,7 @@ export function VerificationsPage() {
         <Card className="border-l-4 border-l-red-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <alertTriangle className="w-8 h-8 text-red-500" />
+              <AlertTriangle className="w-8 h-8 text-red-500" />
               <div>
                 <p className="text-2xl font-bold text-red-600">23</p>
                 <p className="text-sm text-muted-foreground">À faire</p>
@@ -98,7 +98,7 @@ export function VerificationsPage() {
         <Card className="border-l-4 border-l-orange-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <clock className="w-8 h-8 text-orange-500" />
+              <Clock className="w-8 h-8 text-orange-500" />
               <div>
                 <p className="text-2xl font-bold text-orange-600">12</p>
                 <p className="text-sm text-muted-foreground">En cours</p>
@@ -110,7 +110,7 @@ export function VerificationsPage() {
         <Card className="border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <calendar className="w-8 h-8 text-blue-500" />
+              <Calendar className="w-8 h-8 text-blue-500" />
               <div>
                 <p className="text-2xl font-bold text-blue-600">8</p>
                 <p className="text-sm text-muted-foreground">Planifiées</p>
@@ -122,7 +122,7 @@ export function VerificationsPage() {
         <Card className="border-l-4 border-l-green-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <checkCircle className="w-8 h-8 text-green-500" />
+              <CheckCircle className="w-8 h-8 text-green-500" />
               <div>
                 <p className="text-2xl font-bold text-green-600">156</p>
                 <p className="text-sm text-muted-foreground">Ce mois</p>
@@ -136,7 +136,7 @@ export function VerificationsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <activity className="w-5 h-5 text-primary" />
+            <Activity className="w-5 h-5 text-primary" />
             Vérifications en cours
           </CardTitle>
         </CardHeader>
@@ -173,7 +173,7 @@ export function VerificationsPage() {
                     <div className="space-y-1">
                       <p className="text-muted-foreground">Assigné à</p>
                       <div className="flex items-center gap-1">
-                        <user className="w-3 h-3 text-muted-foreground" />
+                        <User className="w-3 h-3 text-muted-foreground" />
                         <span className="font-medium">{verification.assignedTo}</span>
                       </div>
                     </div>
@@ -181,7 +181,7 @@ export function VerificationsPage() {
                     <div className="space-y-1">
                       <p className="text-muted-foreground">Échéance</p>
                       <div className="flex items-center gap-1">
-                        <calendar className="w-3 h-3 text-muted-foreground" />
+                        <Calendar className="w-3 h-3 text-muted-foreground" />
                         <span className="font-medium">{verification.dueDate}</span>
                       </div>
                     </div>

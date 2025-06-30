@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
-  users, 
-  search, 
-  plus,
-  shield,
-  calendar,
-  phone,
-  mail
+  Users, 
+  Search, 
+  Plus,
+  Shield,
+  Calendar,
+  Phone,
+  Mail
 } from "lucide-react";
 
 export function PersonnelPage() {
@@ -79,7 +79,7 @@ export function PersonnelPage() {
           </p>
         </div>
         <Button className="emergency-gradient text-white border-0 hover:opacity-90">
-          <plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-2" />
           Nouveau Personnel
         </Button>
       </div>
@@ -91,7 +91,7 @@ export function PersonnelPage() {
             <CardContent className="p-4">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input 
                     placeholder="Rechercher par nom, grade ou caserne..." 
                     className="pl-10"
@@ -107,7 +107,7 @@ export function PersonnelPage() {
         <Card className="emergency-gradient text-white">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <users className="w-8 h-8" />
+              <Users className="w-8 h-8" />
               <div>
                 <p className="text-2xl font-bold">89</p>
                 <p className="text-sm text-white/80">Personnel actif</p>
@@ -121,7 +121,7 @@ export function PersonnelPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <users className="w-5 h-5 text-primary" />
+            <Users className="w-5 h-5 text-primary" />
             Liste du personnel
           </CardTitle>
         </CardHeader>
@@ -167,11 +167,11 @@ export function PersonnelPage() {
                     <p className="text-muted-foreground">Contact</p>
                     <div className="space-y-1">
                       <div className="flex items-center gap-1">
-                        <phone className="w-3 h-3 text-muted-foreground" />
+                        <Phone className="w-3 h-3 text-muted-foreground" />
                         <span className="font-mono text-xs">{person.phone}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <mail className="w-3 h-3 text-muted-foreground" />
+                        <Mail className="w-3 h-3 text-muted-foreground" />
                         <span className="text-xs">{person.email}</span>
                       </div>
                     </div>
@@ -180,7 +180,7 @@ export function PersonnelPage() {
                   <div className="space-y-1">
                     <p className="text-muted-foreground">EPI attribués</p>
                     <div className="flex items-center gap-1">
-                      <shield className="w-4 h-4 text-primary" />
+                      <Shield className="w-4 h-4 text-primary" />
                       <span className="font-bold text-primary">{person.epiCount}</span>
                       <span className="text-muted-foreground">équipements</span>
                     </div>
@@ -189,7 +189,7 @@ export function PersonnelPage() {
                   <div className="space-y-1">
                     <p className="text-muted-foreground">Dernière MAJ</p>
                     <div className="flex items-center gap-1">
-                      <calendar className="w-3 h-3 text-muted-foreground" />
+                      <Calendar className="w-3 h-3 text-muted-foreground" />
                       <span className="text-xs">{person.lastUpdate}</span>
                     </div>
                   </div>

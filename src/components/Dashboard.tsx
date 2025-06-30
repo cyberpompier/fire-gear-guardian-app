@@ -4,14 +4,14 @@ import { StatsCard } from "./StatsCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  shield, 
-  users, 
-  activity, 
-  bell,
-  alertTriangle,
-  checkCircle,
-  clock,
-  archive
+  Shield, 
+  Users, 
+  Activity, 
+  Bell,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Archive
 } from "lucide-react";
 
 export function Dashboard() {
@@ -20,7 +20,7 @@ export function Dashboard() {
       title: "Total EPI",
       value: "1,247",
       description: "Équipements recensés",
-      icon: shield,
+      icon: Shield,
       gradient: "fire-gradient",
       trend: { value: 5, isPositive: true }
     },
@@ -28,7 +28,7 @@ export function Dashboard() {
       title: "Sapeurs-Pompiers",
       value: "89",
       description: "Personnel actif",
-      icon: users,
+      icon: Users,
       gradient: "emergency-gradient",
       trend: { value: 2, isPositive: true }
     },
@@ -36,7 +36,7 @@ export function Dashboard() {
       title: "Vérifications",
       value: "23",
       description: "À effectuer cette semaine",
-      icon: activity,
+      icon: Activity,
       gradient: "rescue-gradient",
       trend: { value: -12, isPositive: false }
     },
@@ -44,7 +44,7 @@ export function Dashboard() {
       title: "Alertes",
       value: "7",
       description: "Équipements à renouveler",
-      icon: bell,
+      icon: Bell,
       gradient: "fire-gradient",
       trend: { value: 3, isPositive: false }
     }
@@ -88,10 +88,10 @@ export function Dashboard() {
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
-      case 'high': return alertTriangle;
-      case 'medium': return clock;
-      case 'low': return checkCircle;
-      default: return activity;
+      case 'high': return AlertTriangle;
+      case 'medium': return Clock;
+      case 'low': return CheckCircle;
+      default: return Activity;
     }
   };
 
@@ -105,11 +105,11 @@ export function Dashboard() {
         </p>
         <div className="mt-4 flex gap-3">
           <Button variant="secondary" size="sm">
-            <activity className="w-4 h-4 mr-2" />
+            <Activity className="w-4 h-4 mr-2" />
             Nouvelle vérification
           </Button>
           <Button variant="outline" size="sm" className="text-white border-white/30 hover:bg-white/10">
-            <archive className="w-4 h-4 mr-2" />
+            <Archive className="w-4 h-4 mr-2" />
             Consulter les rapports
           </Button>
         </div>
@@ -127,7 +127,6 @@ export function Dashboard() {
             gradient={stat.gradient}
             trend={stat.trend}
             className="animate-fade-in"
-            style={{ animationDelay: `${index * 100}ms` }}
           />
         ))}
       </div>
@@ -138,7 +137,7 @@ export function Dashboard() {
         <Card className="shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <bell className="w-5 h-5 text-primary" />
+              <Bell className="w-5 h-5 text-primary" />
               Alertes récentes
             </CardTitle>
           </CardHeader>
@@ -170,13 +169,13 @@ export function Dashboard() {
         <Card className="shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <activity className="w-5 h-5 text-primary" />
+              <Activity className="w-5 h-5 text-primary" />
               Actions rapides
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <Button variant="outline" className="w-full justify-start h-12">
-              <shield className="w-5 h-5 mr-3" />
+              <Shield className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Ajouter un EPI</div>
                 <div className="text-xs text-muted-foreground">Enregistrer un nouvel équipement</div>
@@ -184,7 +183,7 @@ export function Dashboard() {
             </Button>
             
             <Button variant="outline" className="w-full justify-start h-12">
-              <users className="w-5 h-5 mr-3" />
+              <Users className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Nouveau sapeur-pompier</div>
                 <div className="text-xs text-muted-foreground">Créer un profil personnel</div>
@@ -192,7 +191,7 @@ export function Dashboard() {
             </Button>
             
             <Button variant="outline" className="w-full justify-start h-12">
-              <activity className="w-5 h-5 mr-3" />
+              <Activity className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Planifier vérification</div>
                 <div className="text-xs text-muted-foreground">Programmer un contrôle d'EPI</div>
@@ -200,7 +199,7 @@ export function Dashboard() {
             </Button>
             
             <Button variant="outline" className="w-full justify-start h-12">
-              <archive className="w-5 h-5 mr-3" />
+              <Archive className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Générer rapport</div>
                 <div className="text-xs text-muted-foreground">Exporter les données</div>

@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
-  shield, 
-  search, 
-  plus,
-  calendar,
-  user,
-  alertTriangle,
-  checkCircle
+  Shield, 
+  Search, 
+  Plus,
+  Calendar,
+  User,
+  AlertTriangle,
+  CheckCircle
 } from "lucide-react";
 
 export function EpiPage() {
@@ -84,7 +84,7 @@ export function EpiPage() {
           </p>
         </div>
         <Button className="fire-gradient text-white border-0 hover:opacity-90">
-          <plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4 mr-2" />
           Nouvel EPI
         </Button>
       </div>
@@ -94,7 +94,7 @@ export function EpiPage() {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
-              <search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input 
                 placeholder="Rechercher par numéro de série, type ou utilisateur..." 
                 className="pl-10"
@@ -114,7 +114,7 @@ export function EpiPage() {
             className="cursor-pointer hover:shadow-md transition-shadow border-0 bg-gradient-to-br from-muted/50 to-muted/30"
           >
             <CardContent className="p-4 text-center">
-              <shield className="w-8 h-8 mx-auto mb-2 text-primary" />
+              <Shield className="w-8 h-8 mx-auto mb-2 text-primary" />
               <p className="text-sm font-medium">{type}</p>
             </CardContent>
           </Card>
@@ -125,7 +125,7 @@ export function EpiPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <shield className="w-5 h-5 text-primary" />
+            <Shield className="w-5 h-5 text-primary" />
             Liste des équipements
           </CardTitle>
         </CardHeader>
@@ -147,11 +147,11 @@ export function EpiPage() {
                       <span className="font-mono">{epi.serialNumber}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <user className="w-3 h-3" />
+                      <User className="w-3 h-3" />
                       <span>{epi.assignedTo}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <calendar className="w-3 h-3" />
+                      <Calendar className="w-3 h-3" />
                       <span>Prochaine vérif: {epi.nextCheck}</span>
                     </div>
                   </div>
