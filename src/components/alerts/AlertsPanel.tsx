@@ -100,7 +100,6 @@ export function AlertsPanel() {
                   <Badge 
                     variant="outline" 
                     className={getPriorityColor(alert.priority)}
-                    size="sm"
                   >
                     {alert.priority}
                   </Badge>
