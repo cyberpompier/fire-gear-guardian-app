@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,8 +14,11 @@ import {
   Phone,
   Mail
 } from "lucide-react";
+import { AddPersonnelForm } from "@/components/forms/AddPersonnelForm";
 
 export function PersonnelPage() {
+  const [showAddForm, setShowAddForm] = useState(false);
+
   const mockPersonnel = [
     {
       id: "SP001",
@@ -68,6 +71,23 @@ export function PersonnelPage() {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`;
   };
 
+  const handleAddPersonnel = (data: any) => {
+    console.log("Nouveau personnel ajouté:", data);
+    setShowAddForm(false);
+    // Ici, vous pourrez ajouter la logique pour sauvegarder dans Supabase
+  };
+
+  if (showAddForm) {
+    return (
+      <div className="space-y-6">
+        <AddPersonnelForm 
+          onSubmit={handleAddPersonnel}
+          onCancel={() => setShowAddForm(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -78,7 +98,10 @@ export function PersonnelPage() {
             Sapeurs-pompiers et attribution des EPI
           </p>
         </div>
-        <Button className="emergency-gradient text-white border-0 hover:opacity-90">
+        <Button 
+          className="emergency-gradient text-white border-0 hover:opacity-90"
+          onClick={() => setShowAddForm(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nouveau Personnel
         </Button>

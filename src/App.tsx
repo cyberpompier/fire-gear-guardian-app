@@ -9,6 +9,7 @@ import { Dashboard } from "./components/Dashboard";
 import { EpiPage } from "./pages/EpiPage";
 import { PersonnelPage } from "./pages/PersonnelPage";
 import { VerificationsPage } from "./pages/VerificationsPage";
+import { AlertsPage } from "./pages/AlertsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,10 +43,7 @@ const App = () => (
           } />
           <Route path="/alertes" element={
             <Layout>
-              <div className="space-y-6">
-                <h1 className="text-3xl font-bold">Alertes</h1>
-                <p className="text-muted-foreground">Système d'alertes et notifications - En développement</p>
-              </div>
+              <AlertsPage />
             </Layout>
           } />
           <Route path="/archives" element={

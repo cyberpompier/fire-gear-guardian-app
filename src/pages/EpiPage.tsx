@@ -1,9 +1,10 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { 
   Shield, 
   Search, 
@@ -13,8 +14,14 @@ import {
   AlertTriangle,
   CheckCircle
 } from "lucide-react";
+import { AddEpiForm } from "@/components/forms/AddEpiForm";
+import { EpiDetailModal } from "@/components/modals/EpiDetailModal";
 
 export function EpiPage() {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedEpi, setSelectedEpi] = useState<any>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+
   const epiTypes = [
     "Casques",
     "Tenues de feu", 
@@ -73,6 +80,28 @@ export function EpiPage() {
     );
   };
 
+  const handleAddEpi = (data: any) => {
+    console.log("Nouvel EPI ajouté:", data);
+    setShowAddForm(false);
+    // Ici, vous pourrez ajouter la logique pour sauvegarder dans Supabase
+  };
+
+  const handleViewDetails = (epi: any) => {
+    setSelectedEpi(epi);
+    setShowDetailModal(true);
+  };
+
+  if (showAddForm) {
+    return (
+      <div className="space-y-6">
+        <AddEpiForm 
+          onSubmit={handleAddEpi}
+          onCancel={() => setShowAddForm(false)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -83,7 +112,10 @@ export function EpiPage() {
             Équipements de Protection Individuelle
           </p>
         </div>
-        <Button className="fire-gradient text-white border-0 hover:opacity-90">
+        <Button 
+          className="fire-gradient text-white border-0 hover:opacity-90"
+          onClick={() => setShowAddForm(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nouvel EPI
         </Button>
@@ -160,8 +192,12 @@ export function EpiPage() {
                   <Button variant="outline" size="sm">
                     Modifier
                   </Button>
-                  <Button variant="outline" size="sm">
-                    Vérifier
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleViewDetails(epi)}
+                  >
+                    Détails
                   </Button>
                 </div>
               </div>
@@ -169,6 +205,13 @@ export function EpiPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de détails */}
+      <EpiDetailModal
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        epi={selectedEpi}
+      />
     </div>
   );
 }
