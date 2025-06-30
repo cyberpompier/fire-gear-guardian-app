@@ -1,8 +1,9 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { StatsCard } from "./StatsCard";
+import { StatsOverview } from "./stats/StatsOverview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { QuickActionModal } from "./modals/QuickActionModal";
 import { 
   Shield, 
   Users, 
@@ -11,10 +12,14 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Archive
+  Archive,
+  Plus,
+  TrendingUp
 } from "lucide-react";
 
 export function Dashboard() {
+  const [activeModal, setActiveModal] = useState<"epi" | "personnel" | "verification" | "alert" | null>(null);
+
   const stats = [
     {
       title: "Total EPI",
@@ -104,7 +109,11 @@ export function Dashboard() {
           Bienvenue dans le système de gestion des équipements de protection individuelle
         </p>
         <div className="mt-4 flex gap-3">
-          <Button variant="secondary" size="sm">
+          <Button 
+            variant="secondary" 
+            size="sm"
+            onClick={() => setActiveModal("verification")}
+          >
             <Activity className="w-4 h-4 mr-2" />
             Nouvelle vérification
           </Button>
@@ -115,21 +124,8 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <StatsCard
-            key={index}
-            title={stat.title}
-            value={stat.value}
-            description={stat.description}
-            icon={stat.icon}
-            gradient={stat.gradient}
-            trend={stat.trend}
-            className="animate-fade-in"
-          />
-        ))}
-      </div>
+      {/* Enhanced Stats Overview */}
+      <StatsOverview />
 
       {/* Recent Alerts and Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -159,7 +155,7 @@ export function Dashboard() {
                 </div>
               );
             })}
-            <Button variant="outline" className="w-full mt-3" size="sm">
+            <Button variant="outline" className="w-full mt-3">
               Voir toutes les alertes
             </Button>
           </CardContent>
@@ -169,12 +165,16 @@ export function Dashboard() {
         <Card className="shadow-lg">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Activity className="w-5 h-5 text-primary" />
+              <TrendingUp className="w-5 h-5 text-primary" />
               Actions rapides
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start h-12">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start h-12"
+              onClick={() => setActiveModal("epi")}
+            >
               <Shield className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Ajouter un EPI</div>
@@ -182,7 +182,11 @@ export function Dashboard() {
               </div>
             </Button>
             
-            <Button variant="outline" className="w-full justify-start h-12">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start h-12"
+              onClick={() => setActiveModal("personnel")}
+            >
               <Users className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Nouveau sapeur-pompier</div>
@@ -190,7 +194,11 @@ export function Dashboard() {
               </div>
             </Button>
             
-            <Button variant="outline" className="w-full justify-start h-12">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start h-12"
+              onClick={() => setActiveModal("verification")}
+            >
               <Activity className="w-5 h-5 mr-3" />
               <div className="text-left">
                 <div className="font-medium">Planifier vérification</div>
@@ -198,16 +206,27 @@ export function Dashboard() {
               </div>
             </Button>
             
-            <Button variant="outline" className="w-full justify-start h-12">
-              <Archive className="w-5 h-5 mr-3" />
+            <Button 
+              variant="outline" 
+              className="w-full justify-start h-12"
+              onClick={() => setActiveModal("alert")}
+            >
+              <AlertTriangle className="w-5 h-5 mr-3" />
               <div className="text-left">
-                <div className="font-medium">Générer rapport</div>
-                <div className="text-xs text-muted-foreground">Exporter les données</div>
+                <div className="font-medium">Créer une alerte</div>
+                <div className="text-xs text-muted-foreground">Nouvelle notification</div>
               </div>
             </Button>
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Action Modal */}
+      <QuickActionModal
+        isOpen={activeModal !== null}
+        onClose={() => setActiveModal(null)}
+        actionType={activeModal}
+      />
     </div>
   );
 }

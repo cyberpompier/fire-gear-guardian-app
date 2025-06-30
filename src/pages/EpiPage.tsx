@@ -1,10 +1,10 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { AdvancedFilters } from "@/components/filters/AdvancedFilters";
 import { 
   Shield, 
   Search, 
@@ -83,12 +83,15 @@ export function EpiPage() {
   const handleAddEpi = (data: any) => {
     console.log("Nouvel EPI ajouté:", data);
     setShowAddForm(false);
-    // Ici, vous pourrez ajouter la logique pour sauvegarder dans Supabase
   };
 
   const handleViewDetails = (epi: any) => {
     setSelectedEpi(epi);
     setShowDetailModal(true);
+  };
+
+  const handleFiltersChange = (filters: any[]) => {
+    console.log("Filtres appliqués:", filters);
   };
 
   if (showAddForm) {
@@ -121,22 +124,14 @@ export function EpiPage() {
         </Button>
       </div>
 
-      {/* Search and Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input 
-                placeholder="Rechercher par numéro de série, type ou utilisateur..." 
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline">Filtrer</Button>
-            <Button variant="outline">Exporter</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Advanced Filters */}
+      <AdvancedFilters 
+        onFiltersChange={handleFiltersChange}
+        placeholder="Rechercher par numéro de série, type ou utilisateur..."
+        showStatusFilter={true}
+        showTypeFilter={true}
+        showDateFilter={true}
+      />
 
       {/* EPI Types Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">

@@ -10,6 +10,7 @@ import { EpiPage } from "./pages/EpiPage";
 import { PersonnelPage } from "./pages/PersonnelPage";
 import { VerificationsPage } from "./pages/VerificationsPage";
 import { AlertsPage } from "./pages/AlertsPage";
+import { ReportsPage } from "./pages/ReportsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,11 @@ const App = () => (
           <Route path="/alertes" element={
             <Layout>
               <AlertsPage />
+            </Layout>
+          } />
+          <Route path="/rapports" element={
+            <Layout>
+              <ReportsPage />
             </Layout>
           } />
           <Route path="/archives" element={

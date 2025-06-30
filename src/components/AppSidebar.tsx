@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Activity, 
@@ -7,7 +6,8 @@ import {
   Settings, 
   Archive, 
   Bell,
-  Monitor
+  Monitor,
+  BarChart3
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -54,6 +54,12 @@ const menuItems = [
     url: "/alertes", 
     icon: Bell,
     description: "Notifications"
+  },
+  { 
+    title: "Rapports", 
+    url: "/rapports", 
+    icon: BarChart3,
+    description: "Analyses et statistiques"
   },
   { 
     title: "Archives", 
