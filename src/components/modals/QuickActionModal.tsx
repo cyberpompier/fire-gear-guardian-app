@@ -1,30 +1,11 @@
 
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { 
-  Shield, 
-  Users, 
-  Activity, 
-  AlertTriangle,
-  Calendar,
-  Plus
-} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AddEpiForm } from "@/components/forms/AddEpiForm";
+import { AddPersonnelForm } from "@/components/forms/AddPersonnelForm";
+import { ScheduleVerificationForm } from "@/components/forms/ScheduleVerificationForm";
+import { CreateAlertForm } from "@/components/forms/CreateAlertForm";
+import { useToast } from "@/hooks/use-toast";
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -33,202 +14,58 @@ interface QuickActionModalProps {
 }
 
 export function QuickActionModal({ isOpen, onClose, actionType }: QuickActionModalProps) {
-  const [formData, setFormData] = useState({
-    type: "",
-    serialNumber: "",
-    assignedTo: "",
-    priority: "",
-    description: "",
-    dueDate: ""
-  });
+  const { toast } = useToast();
 
-  const getModalContent = () => {
+  const handleSubmit = (data: any) => {
+    console.log("Form submitted:", data);
+    
+    const messages = {
+      epi: "EPI ajouté avec succès",
+      personnel: "Sapeur-pompier ajouté avec succès",
+      verification: "Vérification planifiée avec succès",
+      alert: "Alerte créée avec succès"
+    };
+
+    toast({
+      title: "Succès",
+      description: messages[actionType as keyof typeof messages],
+    });
+
+    onClose();
+  };
+
+  const getTitleByType = () => {
+    switch (actionType) {
+      case "epi": return "Ajouter un EPI";
+      case "personnel": return "Ajouter un sapeur-pompier";
+      case "verification": return "Planifier une vérification";
+      case "alert": return "Créer une alerte";
+      default: return "";
+    }
+  };
+
+  const renderForm = () => {
     switch (actionType) {
       case "epi":
-        return {
-          title: "Ajouter un EPI rapidement",
-          icon: Shield,
-          color: "text-blue-600",
-          fields: (
-            <>
-              <Select onValueChange={(value) => setFormData({...formData, type: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Type d'équipement" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="casque">Casque F1</SelectItem>
-                  <SelectItem value="tenue">Tenue de feu</SelectItem>
-                  <SelectItem value="ari">ARI</SelectItem>
-                  <SelectItem value="bottes">Bottes</SelectItem>
-                  <SelectItem value="gants">Gants</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Input
-                placeholder="Numéro de série"
-                value={formData.serialNumber}
-                onChange={(e) => setFormData({...formData, serialNumber: e.target.value})}
-              />
-              
-              <Select onValueChange={(value) => setFormData({...formData, assignedTo: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Attribuer à" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="martin">Martin Dubois</SelectItem>
-                  <SelectItem value="sophie">Sophie Laurent</SelectItem>
-                  <SelectItem value="pierre">Pierre Moreau</SelectItem>
-                </SelectContent>
-              </Select>
-            </>
-          )
-        };
-
+        return <AddEpiForm onSubmit={handleSubmit} onCancel={onClose} />;
       case "personnel":
-        return {
-          title: "Ajouter un sapeur-pompier",
-          icon: Users,
-          color: "text-green-600",
-          fields: (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <Input placeholder="Prénom" />
-                <Input placeholder="Nom" />
-              </div>
-              
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Grade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sapeur">Sapeur</SelectItem>
-                  <SelectItem value="caporal">Caporal</SelectItem>
-                  <SelectItem value="sergent">Sergent</SelectItem>
-                  <SelectItem value="adjudant">Adjudant</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Input placeholder="Email professionnel" type="email" />
-            </>
-          )
-        };
-
+        return <AddPersonnelForm onSubmit={handleSubmit} onCancel={onClose} />;
       case "verification":
-        return {
-          title: "Programmer une vérification",
-          icon: Activity,
-          color: "text-orange-600",
-          fields: (
-            <>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Équipement à vérifier" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="epi1">Casque F1 - CSQ-2023-001</SelectItem>
-                  <SelectItem value="epi2">Tenue feu - TF-2022-085</SelectItem>
-                  <SelectItem value="epi3">ARI - ARI-2023-023</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Input
-                type="date"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({...formData, dueDate: e.target.value})}
-              />
-              
-              <Textarea
-                placeholder="Notes de vérification..."
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-              />
-            </>
-          )
-        };
-
+        return <ScheduleVerificationForm onSubmit={handleSubmit} onCancel={onClose} />;
       case "alert":
-        return {
-          title: "Créer une alerte",
-          icon: AlertTriangle,
-          color: "text-red-600",
-          fields: (
-            <>
-              <Select onValueChange={(value) => setFormData({...formData, priority: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Priorité" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="high">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                      Haute
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="medium">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                      Moyenne
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="low">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Basse
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Input placeholder="Titre de l'alerte" />
-              
-              <Textarea
-                placeholder="Description de l'alerte..."
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-              />
-            </>
-          )
-        };
-
+        return <CreateAlertForm onSubmit={handleSubmit} onCancel={onClose} />;
       default:
         return null;
     }
   };
 
-  const content = getModalContent();
-  if (!content) return null;
-
-  const IconComponent = content.icon;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(`Action ${actionType} created:`, formData);
-    onClose();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <IconComponent className={`w-5 h-5 ${content.color}`} />
-            {content.title}
-          </DialogTitle>
+          <DialogTitle>{getTitleByType()}</DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {content.fields}
-          
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
-            </Button>
-            <Button type="submit" className="rescue-gradient text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Créer
-            </Button>
-          </div>
-        </form>
+        {renderForm()}
       </DialogContent>
     </Dialog>
   );

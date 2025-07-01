@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +28,7 @@ import {
   Eye
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { EpiDetailModal } from "@/components/modals/EpiDetailModal";
 
 interface EpiItem {
   id: string;
@@ -44,6 +44,8 @@ interface EpiItem {
 export function EpiTable() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedEpi, setSelectedEpi] = useState<EpiItem | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const mockEpiData: EpiItem[] = [
     {
@@ -102,10 +104,20 @@ export function EpiTable() {
   };
 
   const handleAction = (action: string, item: EpiItem) => {
-    toast({
-      title: `Action: ${action}`,
-      description: `${action} effectuée sur ${item.type} - ${item.serialNumber}`,
-    });
+    if (action === "Voir détails") {
+      setSelectedEpi(item);
+      setIsDetailModalOpen(true);
+    } else {
+      toast({
+        title: `Action: ${action}`,
+        description: `${action} effectuée sur ${item.type} - ${item.serialNumber}`,
+      });
+    }
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedEpi(null);
   };
 
   const filteredData = mockEpiData.filter(item =>
@@ -115,78 +127,97 @@ export function EpiTable() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="w-5 h-5" />
-            Inventaire EPI
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Rechercher un EPI..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 w-64"
-              />
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              Inventaire EPI
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Rechercher un EPI..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 w-64"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead>N° Série</TableHead>
-              <TableHead>Assigné à</TableHead>
-              <TableHead>État</TableHead>
-              <TableHead>Dernière vérif.</TableHead>
-              <TableHead>Prochaine vérif.</TableHead>
-              <TableHead>Localisation</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.type}</TableCell>
-                <TableCell>{item.serialNumber}</TableCell>
-                <TableCell>{item.assignedTo}</TableCell>
-                <TableCell>{getStatusBadge(item.status)}</TableCell>
-                <TableCell>{item.lastVerification}</TableCell>
-                <TableCell>{item.nextVerification}</TableCell>
-                <TableCell>{item.location}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-white">
-                      <DropdownMenuItem onClick={() => handleAction("Voir détails", item)}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Voir détails
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleAction("Modifier", item)}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Modifier
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleAction("Planifier vérification", item)}>
-                        <Clock className="w-4 h-4 mr-2" />
-                        Planifier vérification
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>N° Série</TableHead>
+                <TableHead>Assigné à</TableHead>
+                <TableHead>État</TableHead>
+                <TableHead>Dernière vérif.</TableHead>
+                <TableHead>Prochaine vérif.</TableHead>
+                <TableHead>Localisation</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {filteredData.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.type}</TableCell>
+                  <TableCell>{item.serialNumber}</TableCell>
+                  <TableCell>{item.assignedTo}</TableCell>
+                  <TableCell>{getStatusBadge(item.status)}</TableCell>
+                  <TableCell>{item.lastVerification}</TableCell>
+                  <TableCell>{item.nextVerification}</TableCell>
+                  <TableCell>{item.location}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white">
+                        <DropdownMenuItem onClick={() => handleAction("Voir détails", item)}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          Voir détails
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction("Modifier", item)}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Modifier
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleAction("Planifier vérification", item)}>
+                          <Clock className="w-4 h-4 mr-2" />
+                          Planifier vérification
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <EpiDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseDetailModal}
+        epi={selectedEpi ? {
+          id: selectedEpi.id,
+          type: selectedEpi.type,
+          serialNumber: selectedEpi.serialNumber,
+          assignedTo: selectedEpi.assignedTo,
+          status: selectedEpi.status === "bon" ? "Bon état" : 
+                 selectedEpi.status === "moyen" ? "À vérifier" : "À remplacer",
+          lastCheck: selectedEpi.lastVerification,
+          nextCheck: selectedEpi.nextVerification,
+          statusColor: selectedEpi.status === "bon" ? "green" : 
+                      selectedEpi.status === "moyen" ? "orange" : "red"
+        } : null}
+      />
+    </>
   );
 }
