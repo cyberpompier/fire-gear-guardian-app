@@ -8,9 +8,18 @@ import type { EquipmentItem } from "@/hooks/useEquipment";
 interface EpiTableRowProps {
   item: EquipmentItem;
   onViewDetails: (item: EquipmentItem) => void;
+  onEdit: (item: EquipmentItem) => void;
+  onAssign: (item: EquipmentItem) => void;
+  onScheduleVerification?: (item: EquipmentItem) => void;
 }
 
-export function EpiTableRow({ item, onViewDetails }: EpiTableRowProps) {
+export function EpiTableRow({ 
+  item, 
+  onViewDetails, 
+  onEdit, 
+  onAssign, 
+  onScheduleVerification 
+}: EpiTableRowProps) {
   return (
     <TableRow key={item.id}>
       <TableCell className="font-medium">{item.type}</TableCell>
@@ -23,7 +32,13 @@ export function EpiTableRow({ item, onViewDetails }: EpiTableRowProps) {
       <TableCell>{item.nextVerification || 'N/A'}</TableCell>
       <TableCell>{item.location}</TableCell>
       <TableCell>
-        <EpiTableActions item={item} onViewDetails={onViewDetails} />
+        <EpiTableActions 
+          item={item} 
+          onViewDetails={onViewDetails}
+          onEdit={onEdit}
+          onAssign={onAssign}
+          onScheduleVerification={onScheduleVerification}
+        />
       </TableCell>
     </TableRow>
   );

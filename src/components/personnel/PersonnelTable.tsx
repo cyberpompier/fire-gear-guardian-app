@@ -12,28 +12,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { 
   Users, 
   Search, 
-  MoreVertical, 
-  Edit, 
-  UserCheck,
-  Mail,
-  Phone,
-  Loader2
+  Loader2,
+  Plus
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { PersonnelTableActions } from "./PersonnelTableActions";
+import { PersonnelProfileModal } from "@/components/modals/PersonnelProfileModal";
+import { EditPersonnelModal } from "@/components/modals/EditPersonnelModal";
+import { QuickActionModal } from "@/components/modals/QuickActionModal";
 import { usePersonnel } from "@/hooks/usePersonnel";
 
 export function PersonnelTable() {
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPersonnel, setSelectedPersonnel] = useState<any>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { personnel, isLoading, error } = usePersonnel();
 
   const getStatusBadge = (status: string) => {
@@ -51,11 +47,14 @@ export function PersonnelTable() {
     }
   };
 
-  const handleAction = (action: string, person: any) => {
-    toast({
-      title: `Action: ${action}`,
-      description: `${action} effectuée pour ${person.firstName} ${person.lastName}`,
-    });
+  const handleViewProfile = (person: any) => {
+    setSelectedPersonnel(person);
+    setIsProfileModalOpen(true);
+  };
+
+  const handleEdit = (person: any) => {
+    setSelectedPersonnel(person);
+    setIsEditModalOpen(true);
   };
 
   const filteredData = personnel.filter(person =>
@@ -78,97 +77,102 @@ export function PersonnelTable() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
-            Personnel ({personnel.length})
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Rechercher un sapeur-pompier..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 w-64"
-              />
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              Personnel ({personnel.length})
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Rechercher un sapeur-pompier..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 w-64"
+                />
+              </div>
+              <Button onClick={() => setIsAddModalOpen(true)} className="emergency-gradient text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter Personnel
+              </Button>
             </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="w-6 h-6 animate-spin mr-2" />
-            Chargement du personnel...
-          </div>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Prénom</TableHead>
-                <TableHead>Grade</TableHead>
-                <TableHead>Caserne</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>EPI assignés</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.length === 0 ? (
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="w-6 h-6 animate-spin mr-2" />
+              Chargement du personnel...
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    {searchTerm ? "Aucun personnel trouvé pour cette recherche" : "Aucun personnel dans la base de données"}
-                  </TableCell>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Prénom</TableHead>
+                  <TableHead>Grade</TableHead>
+                  <TableHead>Caserne</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>EPI assignés</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ) : (
-                filteredData.map((person) => (
-                  <TableRow key={person.id}>
-                    <TableCell className="font-medium">{person.lastName}</TableCell>
-                    <TableCell>{person.firstName}</TableCell>
-                    <TableCell>{person.grade}</TableCell>
-                    <TableCell>{person.caserne}</TableCell>
-                    <TableCell>{person.email}</TableCell>
-                    <TableCell>{getStatusBadge(person.status)}</TableCell>
-                    <TableCell>{person.epiCount}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreVertical className="w-4 h-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white">
-                          <DropdownMenuItem onClick={() => handleAction("Voir profil", person)}>
-                            <UserCheck className="w-4 h-4 mr-2" />
-                            Voir profil
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAction("Modifier", person)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleAction("Assigner EPI", person)}>
-                            <UserCheck className="w-4 h-4 mr-2" />
-                            Assigner EPI
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => window.open(`mailto:${person.email}`)}>
-                            <Mail className="w-4 h-4 mr-2" />
-                            Envoyer email
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              </TableHeader>
+              <TableBody>
+                {filteredData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      {searchTerm ? "Aucun personnel trouvé pour cette recherche" : "Aucun personnel dans la base de données"}
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-    </Card>
+                ) : (
+                  filteredData.map((person) => (
+                    <TableRow key={person.id}>
+                      <TableCell className="font-medium">{person.lastName}</TableCell>
+                      <TableCell>{person.firstName}</TableCell>
+                      <TableCell>{person.grade}</TableCell>
+                      <TableCell>{person.caserne}</TableCell>
+                      <TableCell>{person.email}</TableCell>
+                      <TableCell>{getStatusBadge(person.status)}</TableCell>
+                      <TableCell>{person.epiCount}</TableCell>
+                      <TableCell>
+                        <PersonnelTableActions
+                          personnel={person}
+                          onViewProfile={handleViewProfile}
+                          onEdit={handleEdit}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Modals */}
+      <PersonnelProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        personnel={selectedPersonnel}
+      />
+
+      <EditPersonnelModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        personnel={selectedPersonnel}
+      />
+
+      <QuickActionModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        actionType="personnel"
+      />
+    </>
   );
 }

@@ -110,11 +110,131 @@ export function useEquipment() {
     }
   });
 
+  const updateEquipmentMutation = useMutation({
+    mutationFn: async (equipmentData: any) => {
+      console.log('Updating equipment:', equipmentData);
+
+      // Get or create equipment type
+      let typeId = null;
+      const { data: existingType } = await supabase
+        .from('equipment_types')
+        .select('id')
+        .eq('name', equipmentData.type)
+        .single();
+
+      if (existingType) {
+        typeId = existingType.id;
+      } else {
+        const { data: newType, error: typeError } = await supabase
+          .from('equipment_types')
+          .insert({ name: equipmentData.type })
+          .select('id')
+          .single();
+
+        if (typeError) throw typeError;
+        typeId = newType.id;
+      }
+
+      const { data, error } = await supabase
+        .from('equipment_items')
+        .update({
+          type_id: typeId,
+          serial_number: equipmentData.serialNumber,
+          purchase_date: equipmentData.purchaseDate,
+          next_check_date: equipmentData.nextCheck,
+          status: equipmentData.status
+        })
+        .eq('id', equipmentData.id);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['equipment'] });
+      toast({
+        title: "EPI modifié",
+        description: "L'équipement a été modifié avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating equipment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier l'équipement",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteEquipmentMutation = useMutation({
+    mutationFn: async (equipmentId: string) => {
+      console.log('Deleting equipment:', equipmentId);
+
+      const { data, error } = await supabase
+        .from('equipment_items')
+        .delete()
+        .eq('id', equipmentId);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['equipment'] });
+      toast({
+        title: "EPI supprimé",
+        description: "L'équipement a été supprimé avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting equipment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer l'équipement",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const assignEquipmentMutation = useMutation({
+    mutationFn: async ({ equipmentId, personnelId }: { equipmentId: string; personnelId: string }) => {
+      console.log('Assigning equipment:', equipmentId, 'to:', personnelId);
+
+      const { data, error } = await supabase
+        .from('equipment_items')
+        .update({ assigned_to: personnelId })
+        .eq('id', equipmentId);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['equipment'] });
+      toast({
+        title: "EPI assigné",
+        description: "L'équipement a été assigné avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error assigning equipment:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'assigner l'équipement",
+        variant: "destructive",
+      });
+    }
+  });
+
   return {
     equipment,
     isLoading,
     error,
     addEquipment: addEquipmentMutation.mutate,
-    isAdding: addEquipmentMutation.isPending
+    updateEquipment: updateEquipmentMutation.mutate,
+    deleteEquipment: deleteEquipmentMutation.mutate,
+    assignEquipment: assignEquipmentMutation.mutate,
+    isAdding: addEquipmentMutation.isPending,
+    isUpdating: updateEquipmentMutation.isPending,
+    isDeleting: deleteEquipmentMutation.isPending,
+    isAssigning: assignEquipmentMutation.isPending
   };
 }

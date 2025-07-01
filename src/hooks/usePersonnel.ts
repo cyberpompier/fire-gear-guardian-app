@@ -38,10 +38,10 @@ export function usePersonnel() {
         id: person.id,
         firstName: person.first_name,
         lastName: person.last_name,
-        grade: 'Sapeur',
+        grade: person.grade || 'Sapeur',
         caserne: person.station || 'CS Principal',
         email: person.email,
-        status: 'Actif',
+        status: person.status || 'Actif',
         epiCount: 0
       })) as PersonnelMember[];
     }
@@ -57,7 +57,10 @@ export function usePersonnel() {
           first_name: newPerson.firstName,
           last_name: newPerson.lastName,
           email: newPerson.email,
-          station: newPerson.caserne
+          station: newPerson.caserne,
+          grade: newPerson.grade,
+          phone: newPerson.phone || '',
+          status: newPerson.status || 'Actif'
         });
 
       if (error) throw error;
@@ -80,11 +83,80 @@ export function usePersonnel() {
     }
   });
 
+  const updatePersonnelMutation = useMutation({
+    mutationFn: async (personnelData: any) => {
+      console.log('Updating personnel:', personnelData);
+
+      const { data, error } = await supabase
+        .from('firefighters')
+        .update({
+          first_name: personnelData.firstName,
+          last_name: personnelData.lastName,
+          email: personnelData.email,
+          station: personnelData.caserne,
+          grade: personnelData.grade,
+          status: personnelData.status
+        })
+        .eq('id', personnelData.id);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['personnel'] });
+      toast({
+        title: "Personnel modifié",
+        description: "Le sapeur-pompier a été modifié avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating personnel:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier le personnel",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deletePersonnelMutation = useMutation({
+    mutationFn: async (personnelId: string) => {
+      console.log('Deleting personnel:', personnelId);
+
+      const { data, error } = await supabase
+        .from('firefighters')
+        .delete()
+        .eq('id', personnelId);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['personnel'] });
+      toast({
+        title: "Personnel supprimé",
+        description: "Le sapeur-pompier a été supprimé avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error deleting personnel:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer le personnel",
+        variant: "destructive",
+      });
+    }
+  });
+
   return {
     personnel,
     isLoading,
     error,
     addPersonnel: addPersonnelMutation.mutate,
-    isAdding: addPersonnelMutation.isPending
+    updatePersonnel: updatePersonnelMutation.mutate,
+    deletePersonnel: deletePersonnelMutation.mutate,
+    isAdding: addPersonnelMutation.isPending,
+    isUpdating: updatePersonnelMutation.isPending,
+    isDeleting: deletePersonnelMutation.isPending
   };
 }
