@@ -1,8 +1,6 @@
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -12,60 +10,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { 
-  Shield, 
-  Search, 
-  MoreVertical, 
-  Edit, 
-  AlertTriangle, 
-  CheckCircle,
-  Clock,
-  Eye,
-  Loader2
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Shield, Search, Loader2 } from "lucide-react";
 import { EpiDetailModal } from "@/components/modals/EpiDetailModal";
+import { EpiTableRow } from "./EpiTableRow";
 import { useEquipment } from "@/hooks/useEquipment";
 
 export function EpiTable() {
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEpi, setSelectedEpi] = useState<any>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const { equipment, isLoading, error } = useEquipment();
 
-  const getStatusBadge = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "available":
-      case "bon":
-        return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Bon</Badge>;
-      case "maintenance":
-      case "moyen":
-        return <Badge className="bg-orange-100 text-orange-800"><Clock className="w-3 h-3 mr-1" />Maintenance</Badge>;
-      case "retired":
-      case "mauvais":
-        return <Badge className="bg-red-100 text-red-800"><AlertTriangle className="w-3 h-3 mr-1" />À remplacer</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
-
-  const handleAction = (action: string, item: any) => {
-    if (action === "Voir détails") {
-      setSelectedEpi(item);
-      setIsDetailModalOpen(true);
-    } else {
-      toast({
-        title: `Action: ${action}`,
-        description: `${action} effectuée sur ${item.type} - ${item.serialNumber}`,
-      });
-    }
+  const handleViewDetails = (item: any) => {
+    setSelectedEpi(item);
+    setIsDetailModalOpen(true);
   };
 
   const handleCloseDetailModal = () => {
@@ -142,38 +100,11 @@ export function EpiTable() {
                   </TableRow>
                 ) : (
                   filteredData.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.type}</TableCell>
-                      <TableCell>{item.serialNumber}</TableCell>
-                      <TableCell>{item.assignedTo}</TableCell>
-                      <TableCell>{getStatusBadge(item.status)}</TableCell>
-                      <TableCell>{item.lastVerification || 'N/A'}</TableCell>
-                      <TableCell>{item.nextVerification || 'N/A'}</TableCell>
-                      <TableCell>{item.location}</TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <MoreVertical className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-white">
-                            <DropdownMenuItem onClick={() => handleAction("Voir détails", item)}>
-                              <Eye className="w-4 h-4 mr-2" />
-                              Voir détails
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleAction("Modifier", item)}>
-                              <Edit className="w-4 h-4 mr-2" />
-                              Modifier
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleAction("Planifier vérification", item)}>
-                              <Clock className="w-4 h-4 mr-2" />
-                              Planifier vérification
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
+                    <EpiTableRow 
+                      key={item.id} 
+                      item={item} 
+                      onViewDetails={handleViewDetails} 
+                    />
                   ))
                 )}
               </TableBody>
