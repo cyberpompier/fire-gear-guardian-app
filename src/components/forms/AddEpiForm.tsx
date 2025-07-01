@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { CalendarIcon, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEquipment } from "@/hooks/useEquipment";
 
 interface AddEpiFormProps {
   onSubmit: (data: any) => void;
@@ -17,13 +18,14 @@ interface AddEpiFormProps {
 }
 
 export function AddEpiForm({ onSubmit, onCancel }: AddEpiFormProps) {
+  const { addEquipment, isAdding } = useEquipment();
   const [formData, setFormData] = useState({
     type: "",
     serialNumber: "",
     assignedTo: "",
     purchaseDate: undefined as Date | undefined,
     nextCheck: undefined as Date | undefined,
-    status: "Bon état"
+    status: "Available"
   });
 
   const epiTypes = [
@@ -39,7 +41,18 @@ export function AddEpiForm({ onSubmit, onCancel }: AddEpiFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    const equipmentData = {
+      type: formData.type,
+      serialNumber: formData.serialNumber,
+      assignedTo: formData.assignedTo,
+      purchaseDate: formData.purchaseDate?.toISOString().split('T')[0],
+      nextCheck: formData.nextCheck?.toISOString().split('T')[0],
+      status: formData.status
+    };
+
+    addEquipment(equipmentData);
+    onSubmit(equipmentData);
   };
 
   return (
@@ -149,21 +162,20 @@ export function AddEpiForm({ onSubmit, onCancel }: AddEpiFormProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Bon état">Bon état</SelectItem>
-                  <SelectItem value="À vérifier">À vérifier</SelectItem>
-                  <SelectItem value="À remplacer">À remplacer</SelectItem>
-                  <SelectItem value="En maintenance">En maintenance</SelectItem>
+                  <SelectItem value="Available">Disponible</SelectItem>
+                  <SelectItem value="Maintenance">En maintenance</SelectItem>
+                  <SelectItem value="Retired">À remplacer</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isAdding}>
               Annuler
             </Button>
-            <Button type="submit" className="fire-gradient text-white">
-              Ajouter l'EPI
+            <Button type="submit" className="fire-gradient text-white" disabled={isAdding}>
+              {isAdding ? "Ajout en cours..." : "Ajouter l'EPI"}
             </Button>
           </div>
         </form>

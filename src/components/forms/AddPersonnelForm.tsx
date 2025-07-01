@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import { usePersonnel } from "@/hooks/usePersonnel";
 
 interface AddPersonnelFormProps {
   onSubmit: (data: any) => void;
@@ -13,6 +14,7 @@ interface AddPersonnelFormProps {
 }
 
 export function AddPersonnelForm({ onSubmit, onCancel }: AddPersonnelFormProps) {
+  const { addPersonnel, isAdding } = usePersonnel();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -48,7 +50,19 @@ export function AddPersonnelForm({ onSubmit, onCancel }: AddPersonnelFormProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    const personnelData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      grade: formData.grade,
+      caserne: formData.caserne,
+      phone: formData.phone,
+      email: formData.email,
+      status: formData.status
+    };
+
+    addPersonnel(personnelData);
+    onSubmit(personnelData);
   };
 
   return (
@@ -152,11 +166,11 @@ export function AddPersonnelForm({ onSubmit, onCancel }: AddPersonnelFormProps) 
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isAdding}>
               Annuler
             </Button>
-            <Button type="submit" className="emergency-gradient text-white">
-              Ajouter le personnel
+            <Button type="submit" className="emergency-gradient text-white" disabled={isAdding}>
+              {isAdding ? "Ajout en cours..." : "Ajouter le personnel"}
             </Button>
           </div>
         </form>

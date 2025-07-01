@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { CalendarIcon, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useVerifications } from "@/hooks/useVerifications";
 
 interface ScheduleVerificationFormProps {
   onSubmit: (data: any) => void;
@@ -18,6 +19,7 @@ interface ScheduleVerificationFormProps {
 }
 
 export function ScheduleVerificationForm({ onSubmit, onCancel }: ScheduleVerificationFormProps) {
+  const { scheduleVerification, isScheduling } = useVerifications();
   const [formData, setFormData] = useState({
     epiId: "",
     verificationType: "",
@@ -52,7 +54,18 @@ export function ScheduleVerificationForm({ onSubmit, onCancel }: ScheduleVerific
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    const verificationData = {
+      epiId: formData.epiId,
+      verificationType: formData.verificationType,
+      scheduledDate: formData.scheduledDate?.toISOString().split('T')[0],
+      assignedTo: formData.assignedTo,
+      priority: formData.priority,
+      notes: formData.notes
+    };
+
+    scheduleVerification(verificationData);
+    onSubmit(verificationData);
   };
 
   return (
@@ -159,11 +172,11 @@ export function ScheduleVerificationForm({ onSubmit, onCancel }: ScheduleVerific
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isScheduling}>
               Annuler
             </Button>
-            <Button type="submit" className="rescue-gradient text-white">
-              Planifier la vérification
+            <Button type="submit" className="rescue-gradient text-white" disabled={isScheduling}>
+              {isScheduling ? "Planification..." : "Planifier la vérification"}
             </Button>
           </div>
         </form>

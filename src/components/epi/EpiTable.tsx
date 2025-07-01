@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,85 +26,37 @@ import {
   AlertTriangle, 
   CheckCircle,
   Clock,
-  Eye
+  Eye,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { EpiDetailModal } from "@/components/modals/EpiDetailModal";
-
-interface EpiItem {
-  id: string;
-  type: string;
-  serialNumber: string;
-  assignedTo: string;
-  status: "bon" | "moyen" | "mauvais";
-  lastVerification: string;
-  nextVerification: string;
-  location: string;
-}
+import { useEquipment } from "@/hooks/useEquipment";
 
 export function EpiTable() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedEpi, setSelectedEpi] = useState<EpiItem | null>(null);
+  const [selectedEpi, setSelectedEpi] = useState<any>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-
-  const mockEpiData: EpiItem[] = [
-    {
-      id: "1",
-      type: "Casque F1",
-      serialNumber: "CSQ-2023-001",
-      assignedTo: "Martin Dubois",
-      status: "bon",
-      lastVerification: "15/11/2024",
-      nextVerification: "15/05/2025",
-      location: "Vestiaire A"
-    },
-    {
-      id: "2",
-      type: "Tenue de feu",
-      serialNumber: "TF-2022-085",
-      assignedTo: "Sophie Laurent",
-      status: "moyen",
-      lastVerification: "10/10/2024",
-      nextVerification: "10/04/2025",
-      location: "Vestiaire B"
-    },
-    {
-      id: "3",
-      type: "ARI",
-      serialNumber: "ARI-2023-023",
-      assignedTo: "Pierre Moreau",
-      status: "mauvais",
-      lastVerification: "05/09/2024",
-      nextVerification: "05/03/2025",
-      location: "Local ARI"
-    },
-    {
-      id: "4",
-      type: "Bottes",
-      serialNumber: "BT-2023-156",
-      assignedTo: "Marie Durand",
-      status: "bon",
-      lastVerification: "20/11/2024",
-      nextVerification: "20/05/2025",
-      location: "Vestiaire C"
-    }
-  ];
+  const { equipment, isLoading, error } = useEquipment();
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case "available":
       case "bon":
         return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Bon</Badge>;
+      case "maintenance":
       case "moyen":
-        return <Badge className="bg-orange-100 text-orange-800"><Clock className="w-3 h-3 mr-1" />Moyen</Badge>;
+        return <Badge className="bg-orange-100 text-orange-800"><Clock className="w-3 h-3 mr-1" />Maintenance</Badge>;
+      case "retired":
       case "mauvais":
         return <Badge className="bg-red-100 text-red-800"><AlertTriangle className="w-3 h-3 mr-1" />À remplacer</Badge>;
       default:
-        return <Badge>Inconnu</Badge>;
+        return <Badge>{status}</Badge>;
     }
   };
 
-  const handleAction = (action: string, item: EpiItem) => {
+  const handleAction = (action: string, item: any) => {
     if (action === "Voir détails") {
       setSelectedEpi(item);
       setIsDetailModalOpen(true);
@@ -120,11 +73,23 @@ export function EpiTable() {
     setSelectedEpi(null);
   };
 
-  const filteredData = mockEpiData.filter(item =>
+  const filteredData = equipment.filter(item =>
     item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.assignedTo.toLowerCase().includes(searchTerm.toLowerCase())
+    item.assignedTo?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-red-600">
+            Erreur lors du chargement des équipements: {error.message}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -149,56 +114,71 @@ export function EpiTable() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>N° Série</TableHead>
-                <TableHead>Assigné à</TableHead>
-                <TableHead>État</TableHead>
-                <TableHead>Dernière vérif.</TableHead>
-                <TableHead>Prochaine vérif.</TableHead>
-                <TableHead>Localisation</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.type}</TableCell>
-                  <TableCell>{item.serialNumber}</TableCell>
-                  <TableCell>{item.assignedTo}</TableCell>
-                  <TableCell>{getStatusBadge(item.status)}</TableCell>
-                  <TableCell>{item.lastVerification}</TableCell>
-                  <TableCell>{item.nextVerification}</TableCell>
-                  <TableCell>{item.location}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white">
-                        <DropdownMenuItem onClick={() => handleAction("Voir détails", item)}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          Voir détails
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction("Modifier", item)}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAction("Planifier vérification", item)}>
-                          <Clock className="w-4 h-4 mr-2" />
-                          Planifier vérification
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <Loader2 className="w-6 h-6 animate-spin mr-2" />
+              Chargement des équipements...
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>N° Série</TableHead>
+                  <TableHead>Assigné à</TableHead>
+                  <TableHead>État</TableHead>
+                  <TableHead>Dernière vérif.</TableHead>
+                  <TableHead>Prochaine vérif.</TableHead>
+                  <TableHead>Localisation</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      {searchTerm ? "Aucun équipement trouvé pour cette recherche" : "Aucun équipement dans la base de données"}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredData.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.type}</TableCell>
+                      <TableCell>{item.serialNumber}</TableCell>
+                      <TableCell>{item.assignedTo}</TableCell>
+                      <TableCell>{getStatusBadge(item.status)}</TableCell>
+                      <TableCell>{item.lastVerification || 'N/A'}</TableCell>
+                      <TableCell>{item.nextVerification || 'N/A'}</TableCell>
+                      <TableCell>{item.location}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="bg-white">
+                            <DropdownMenuItem onClick={() => handleAction("Voir détails", item)}>
+                              <Eye className="w-4 h-4 mr-2" />
+                              Voir détails
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAction("Modifier", item)}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAction("Planifier vérification", item)}>
+                              <Clock className="w-4 h-4 mr-2" />
+                              Planifier vérification
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
 
@@ -210,12 +190,12 @@ export function EpiTable() {
           type: selectedEpi.type,
           serialNumber: selectedEpi.serialNumber,
           assignedTo: selectedEpi.assignedTo,
-          status: selectedEpi.status === "bon" ? "Bon état" : 
-                 selectedEpi.status === "moyen" ? "À vérifier" : "À remplacer",
+          status: selectedEpi.status === "Available" ? "Bon état" : 
+                 selectedEpi.status === "Maintenance" ? "À vérifier" : "À remplacer",
           lastCheck: selectedEpi.lastVerification,
           nextCheck: selectedEpi.nextVerification,
-          statusColor: selectedEpi.status === "bon" ? "green" : 
-                      selectedEpi.status === "moyen" ? "orange" : "red"
+          statusColor: selectedEpi.status === "Available" ? "green" : 
+                      selectedEpi.status === "Maintenance" ? "orange" : "red"
         } : null}
       />
     </>
