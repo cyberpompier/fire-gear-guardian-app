@@ -114,11 +114,113 @@ export function useVerifications() {
     }
   });
 
+  const updateVerificationMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
+      console.log('Updating verification:', id, updates);
+
+      const { data, error } = await supabase
+        .from('equipment_checks')
+        .update({
+          check_date: updates.scheduledDate,
+          next_check_date: updates.scheduledDate,
+          result: updates.status || 'Planifié',
+          notes: updates.notes || ''
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['verifications'] });
+      toast({
+        title: "Vérification modifiée",
+        description: "La vérification a été modifiée avec succès",
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating verification:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier la vérification",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const cancelVerificationMutation = useMutation({
+    mutationFn: async (id: string) => {
+      console.log('Canceling verification:', id);
+
+      const { data, error } = await supabase
+        .from('equipment_checks')
+        .update({ result: 'Annulé' })
+        .eq('id', id);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['verifications'] });
+      toast({
+        title: "Vérification annulée",
+        description: "La vérification a été annulée",
+      });
+    },
+    onError: (error) => {
+      console.error('Error canceling verification:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'annuler la vérification",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const completeVerificationMutation = useMutation({
+    mutationFn: async ({ id, result, notes }: { id: string; result: string; notes?: string }) => {
+      console.log('Completing verification:', id, result);
+
+      const { data, error } = await supabase
+        .from('equipment_checks')
+        .update({
+          result,
+          notes: notes || '',
+          check_date: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['verifications'] });
+      toast({
+        title: "Vérification terminée",
+        description: "La vérification a été marquée comme terminée",
+      });
+    },
+    onError: (error) => {
+      console.error('Error completing verification:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de terminer la vérification",
+        variant: "destructive",
+      });
+    }
+  });
+
   return {
     verifications,
     isLoading,
     error,
     scheduleVerification: scheduleVerificationMutation.mutate,
-    isScheduling: scheduleVerificationMutation.isPending
+    updateVerification: updateVerificationMutation.mutate,
+    cancelVerification: cancelVerificationMutation.mutate,
+    completeVerification: completeVerificationMutation.mutate,
+    isScheduling: scheduleVerificationMutation.isPending,
+    isUpdating: updateVerificationMutation.isPending,
+    isCanceling: cancelVerificationMutation.isPending,
+    isCompleting: completeVerificationMutation.isPending
   };
 }
